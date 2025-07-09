@@ -30,7 +30,7 @@ watch(filtered_repos, () => {
 
 <template>
   <div v-if="repos.length != 0">
-    <div class="flex flex-between mt-3 gap-4">
+    <div class="flex flex-between gap-4">
       <select
         @change="filterSelected($event.target.value)"
         class="bg-gray-100 p-2 px-3 rounded rounded-md border border-gray-300"
