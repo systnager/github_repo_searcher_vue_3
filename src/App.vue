@@ -1,6 +1,6 @@
 <script setup>
 import { ref, provide } from 'vue'
-import { fetchRepos } from '@/github'
+import { fetchAllDataByUsername } from '@/github'
 import { ERROR_MESSAGE_KEY } from '@/keys'
 import { REPOSITORIES_TAB_NAME, TAB_LIST } from '@/constants'
 
@@ -20,7 +20,7 @@ function searchButtonClicked() {
     return
   }
   showLoader()
-  fetchRepos(username.value)
+  fetchAllDataByUsername(username.value)
   hideLoader()
   if (!TAB_LIST.includes(tabNavigationRef.value.tab)) {
     tabNavigationRef.value.setTab(REPOSITORIES_TAB_NAME)

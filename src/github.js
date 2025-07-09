@@ -5,6 +5,7 @@ const BASE_URL = 'https://api.github.com'
 
 export const repos = ref([])
 export const filtered_repos = ref([])
+export const followers = ref([])
 
 export async function getRepos(query) {
   try {
@@ -15,9 +16,27 @@ export async function getRepos(query) {
   }
 }
 
+export async function getFollowers(username) {
+  try {
+    const { data } = await axios.get(`${BASE_URL}/users/${username}/followers`)
+    return data
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export async function fetchAllDataByUsername(username) {
+  await fetchRepos(username)
+  await fetchFollowers(username)
+}
+
 export async function fetchRepos(username) {
   repos.value = await getRepos(username)
   filtered_repos.value = repos.value
+}
+
+export async function fetchFollowers(username) {
+  followers.value = await getFollowers(username)
 }
 
 export function sortByName() {
