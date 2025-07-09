@@ -1,20 +1,20 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { repos, filtered_repos, fetchRepos, sortByName, sortByStars } from '@/github'
+import { ref, provide } from 'vue'
+import { fetchRepos } from '@/github'
+import { ERROR_MESSAGE_KEY } from '@/keys'
 
-import RepoCardList from '@/components/RepoCardList.vue'
 import TheLoader from '@/components/TheLoader.vue'
+import TheRepoTab from '@/components/TheRepoTab.vue'
 
 const minDelay = 250
 
 const username = ref('')
-const repo_name = ref('')
 const error_message = ref('')
 const isLoading = ref(false)
 
 function searchButtonClicked() {
   if (username.value.length == 0) {
-    error_message.value = 'Please enter username'
+    showError('Please enter username')
     return
   }
   showLoader()
@@ -22,12 +22,12 @@ function searchButtonClicked() {
   hideLoader()
 }
 
-function filterSelected(value) {
-  if (value == 'by_name') {
-    sortByName()
-  } else if (value == 'by_stars') {
-    sortByStars()
-  }
+function showError(error) {
+  error_message.value = error
+}
+
+function hideError() {
+  error_message.value = ''
 }
 
 function showLoader() {
@@ -39,17 +39,7 @@ async function hideLoader() {
   isLoading.value = false
 }
 
-watch(repo_name, () => {
-  filtered_repos.value = repos.value.filter((repo) => repo.name.includes(repo_name.value))
-})
-
-watch(filtered_repos, () => {
-  if (filtered_repos.value.length == 0) {
-    error_message.value = 'No any repositories found'
-  } else {
-    error_message.value = ''
-  }
-})
+provide(ERROR_MESSAGE_KEY, { showError, hideError })
 </script>
 
 <template>
@@ -70,23 +60,9 @@ watch(filtered_repos, () => {
         Search
       </button>
     </div>
-    <div class="flex flex-between mt-5 gap-4">
-      <select
-        @change="filterSelected($event.target.value)"
-        class="bg-gray-100 p-2 px-3 rounded rounded-md border border-gray-300"
-      >
-        <option value="" disabled selected>Sort by</option>
-        <option value="by_name">By name</option>
-        <option value="by_stars">By stars</option>
-      </select>
-      <input
-        class="w-full border border-gray-300 rounded rounded-md p-1 px-3 bg-gray-100"
-        type="text"
-        v-model="repo_name"
-        placeholder="Filter query"
-      />
+    <div>
+      <TheRepoTab />
     </div>
-    <RepoCardList class="mt-5" :repos="filtered_repos" />
     <div>
       <h2 class="text-center text-gray-800">
         {{ error_message }}
