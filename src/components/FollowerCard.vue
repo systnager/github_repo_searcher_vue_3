@@ -21,7 +21,9 @@ defineProps({
   >
     <a :href="profileUrl" class="flex justify-between"
       ><img class="w-12 h-12 rounded-2xl" :src="avatarUrl" :alt="username" />
-      <span class="font-bold text-center text-gray-800 flex-1 my-auto">{{ username }}</span></a
+      <span class="font-bold text-center text-gray-800 flex-1 my-auto truncate">{{
+        username
+      }}</span></a
     >
   </div>
 </template>
