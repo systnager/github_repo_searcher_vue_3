@@ -52,6 +52,7 @@ provide(ERROR_MESSAGE_KEY, { showError, hideError })
         type="text"
         v-model="username"
         placeholder="Username"
+        @keyup.enter="searchButtonClicked"
       />
       <button
         class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white transition ease-in duration-200 font-bold py-2 px-4 rounded"

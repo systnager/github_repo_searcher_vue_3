@@ -30,7 +30,7 @@ watch(filtered_repos, () => {
 
 <template>
   <div v-if="repos.length != 0">
-    <div class="flex flex-between mt-5 gap-4">
+    <div class="flex flex-between mt-3 gap-4">
       <select
         @change="filterSelected($event.target.value)"
         class="bg-gray-100 p-2 px-3 rounded rounded-md border border-gray-300"
@@ -46,6 +46,6 @@ watch(filtered_repos, () => {
         placeholder="Filter query"
       />
     </div>
-    <RepoCardList class="mt-5" :repos="filtered_repos" />
+    <RepoCardList class="mt-10" :repos="filtered_repos" />
   </div>
 </template>
