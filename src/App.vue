@@ -2,25 +2,17 @@
 import { ref, provide } from 'vue'
 import { fetchRepos } from '@/github'
 import { ERROR_MESSAGE_KEY } from '@/keys'
-import {
-  REPOSITORIES_TAB_NAME,
-  FOLLOWING_TAB_NAME,
-  FOLLOWERS_TAB_NAME,
-  GISTS_TAB_NAME,
-} from '@/constants'
+import { REPOSITORIES_TAB_NAME, TAB_LIST } from '@/constants'
 
 import TheLoader from '@/components/TheLoader.vue'
-import TheRepoTab from '@/components/TheRepoTab.vue'
-import TheFollowingTab from '@/components/TheFollowingTab.vue'
-import TheFollowersTab from '@/components/TheFollowersTab.vue'
-import TheGistsTab from '@/components/TheGistsTab.vue'
+import TheTabNavigation from '@/components/TheTabNavigation.vue'
 
 const minDelay = 250
 
 const username = ref('')
 const error_message = ref('')
 const isLoading = ref(false)
-const tab = ref('')
+const tabNavigationRef = ref()
 
 function searchButtonClicked() {
   if (username.value.length == 0) {
@@ -30,8 +22,8 @@ function searchButtonClicked() {
   showLoader()
   fetchRepos(username.value)
   hideLoader()
-  if (tab.value == '') {
-    tab.value = REPOSITORIES_TAB_NAME
+  if (!TAB_LIST.includes(tabNavigationRef.value.tab)) {
+    tabNavigationRef.value.setTab(REPOSITORIES_TAB_NAME)
   }
 }
 
@@ -76,41 +68,7 @@ provide(ERROR_MESSAGE_KEY, { showError, hideError })
         Search
       </button>
     </div>
-    <div class="mt-5 bg-gray-100 p-5 rounded rounded-lg">
-      <div class="flex flex-between mt-5 gap-2">
-        <button
-          class="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white transition ease-in duration-100 font-bold py-2 active:bg-gray-800 flex-1 rounded"
-          @click="tab = REPOSITORIES_TAB_NAME"
-        >
-          Repositories
-        </button>
-        <button
-          class="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white transition ease-in duration-100 font-bold py-2 active:bg-gray-800 flex-1 rounded"
-          @click="tab = FOLLOWERS_TAB_NAME"
-        >
-          Followers
-        </button>
-        <button
-          class="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white transition ease-in duration-100 font-bold py-2 active:bg-gray-800 flex-1 rounded"
-          @click="tab = FOLLOWING_TAB_NAME"
-        >
-          Following
-        </button>
-        <button
-          class="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white transition ease-in duration-100 font-bold py-2 active:bg-gray-800 flex-1 rounded"
-          @click="tab = GISTS_TAB_NAME"
-        >
-          Gists
-        </button>
-      </div>
-      <div class="mt-5">
-        <TheRepoTab v-if="tab == REPOSITORIES_TAB_NAME" />
-        <TheFollowingTab v-if="tab == FOLLOWING_TAB_NAME" />
-        <TheFollowersTab v-if="tab == FOLLOWERS_TAB_NAME" />
-        <TheGistsTab v-if="tab == GISTS_TAB_NAME" />
-      </div>
-    </div>
-
+    <TheTabNavigation ref="tabNavigationRef" />
     <div>
       <h2 class="text-center text-gray-800">
         {{ error_message }}

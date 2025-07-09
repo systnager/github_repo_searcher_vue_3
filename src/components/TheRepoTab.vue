@@ -29,7 +29,7 @@ watch(filtered_repos, () => {
 </script>
 
 <template>
-  <div v-if="repos.length != 0">
+  <div v-if="repos.length != 0" class="mt-5">
     <div class="flex flex-between gap-4">
       <select
         @change="filterSelected($event.target.value)"
