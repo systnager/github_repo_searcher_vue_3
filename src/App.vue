@@ -3,21 +3,27 @@ import { ref, watch } from 'vue'
 import { getRepos } from '@/github'
 
 import RepoCardList from '@/components/RepoCardList.vue'
+import TheLoader from '@/components/TheLoader.vue'
 
+const minDelay = 250
 const repos = ref([])
 const filtered_repos = ref([])
 const username = ref('')
 const repo_name = ref('')
-const error_message = ref('No any repositories found')
+const error_message = ref('')
+const isLoading = ref(false)
 
 async function fetchRepos() {
+  showLoader()
   repos.value = await getRepos(username.value)
   filtered_repos.value = repos.value
+  hideLoader()
 }
 
 function searchButtonClicked() {
   if (username.value.length == 0) {
     error_message.value = 'Please enter username'
+    return
   }
   fetchRepos()
 }
@@ -38,6 +44,15 @@ function sortByStars() {
   filtered_repos.value.sort((a, b) => b.stargazers_count - a.stargazers_count)
 }
 
+function showLoader() {
+  isLoading.value = true
+}
+
+async function hideLoader() {
+  await new Promise((resolve) => setTimeout(resolve, minDelay))
+  isLoading.value = false
+}
+
 watch(repo_name, () => {
   filtered_repos.value = repos.value.filter((repo) => repo.name.includes(repo_name.value))
 })
@@ -52,6 +67,7 @@ watch(filtered_repos, () => {
 </script>
 
 <template>
+  <TheLoader v-if="isLoading" />
   <div class="mx-auto w-4/5 border border-gray-100 mt-15 bg-white rounded rounded-lg p-10">
     <h1 class="text-3xl font-bold text-center text-gray-800">Github repo searcher</h1>
     <div class="flex flex-between mt-5 gap-4 mx-5">
@@ -70,7 +86,7 @@ watch(filtered_repos, () => {
     </div>
     <div class="flex flex-between mt-5 gap-4 mx-5">
       <select
-        @click="filterSelected($event.target.value)"
+        @change="filterSelected($event.target.value)"
         class="bg-gray-100 p-2 px-3 rounded rounded-md border border-gray-300"
       >
         <option value="" disabled selected>Sort by</option>
