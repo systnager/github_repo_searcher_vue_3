@@ -9,7 +9,9 @@ import {
   TAB_LIST,
 } from '@/constants'
 
-const currentTab = ref()
+import { CURRENT_TAB_LOCAL_STORAGE_KEY } from '@/keys'
+
+const currentTab = ref(localStorage.getItem(CURRENT_TAB_LOCAL_STORAGE_KEY) || null)
 
 import TheRepoTab from '@/components/TheRepoTab.vue'
 import TheFollowingTab from '@/components/TheFollowingTab.vue'
