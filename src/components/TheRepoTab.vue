@@ -1,16 +1,16 @@
 <script setup>
-import { watch, ref, inject } from 'vue'
+import { watch, ref, onMounted } from 'vue'
 import { filtered_repos, sortByName, sortByStars, repos } from '@/github'
 import RepoCardList from '@/components/RepoCardList.vue'
 import {
-  ERROR_MESSAGE_KEY,
   REPO_NAME_REPO_TAB_SEARCH_LOCAL_STORAGE_KEY,
   FILTERED_REPOS_LOCAL_STORAGE_KEY,
 } from '@/keys'
 
-const repo_name = ref(localStorage.getItem(REPO_NAME_REPO_TAB_SEARCH_LOCAL_STORAGE_KEY) || '')
+import ErrorMessage from '@/components/ErrorMessage.vue'
+
+const repoName = ref('')
 const sortBySelect = ref('')
-const { showError, hideError } = inject(ERROR_MESSAGE_KEY)
 
 function filterSelected(value) {
   if (value == 'by_name') {
@@ -20,25 +20,21 @@ function filterSelected(value) {
   }
 }
 
-watch(repo_name, () => {
-  filtered_repos.value = repos.value.filter((repo) => repo.name.includes(repo_name.value))
-  sortBySelect.value = null
-  localStorage.setItem(REPO_NAME_REPO_TAB_SEARCH_LOCAL_STORAGE_KEY, repo_name.value)
+watch(repoName, () => {
+  filtered_repos.value = repos.value.filter((repo) => repo.name.includes(repoName.value))
+  sortBySelect.value = ''
+  localStorage.setItem(REPO_NAME_REPO_TAB_SEARCH_LOCAL_STORAGE_KEY, repoName.value)
   localStorage.setItem(FILTERED_REPOS_LOCAL_STORAGE_KEY, JSON.stringify(filtered_repos.value))
 })
 
-watch(filtered_repos, () => {
-  if (filtered_repos.value.length == 0) {
-    showError('No repos found')
-  } else {
-    hideError()
-  }
+onMounted(() => {
+  repoName.value = localStorage.getItem(REPO_NAME_REPO_TAB_SEARCH_LOCAL_STORAGE_KEY) || ''
 })
 </script>
 
 <template>
-  <div v-if="repos.length != 0" class="mt-5">
-    <div class="flex flex-between gap-4">
+  <div class="mt-5">
+    <div v-if="repos.length != 0" class="flex flex-between gap-4">
       <select
         @change="filterSelected($event.target.value)"
         class="bg-gray-100 p-2 px-3 rounded rounded-md border border-gray-300"
@@ -51,10 +47,11 @@ watch(filtered_repos, () => {
       <input
         class="w-full border border-gray-300 rounded rounded-md p-1 px-3 bg-gray-100"
         type="text"
-        v-model="repo_name"
+        v-model="repoName"
         placeholder="Filter query"
       />
     </div>
+    <ErrorMessage v-if="filtered_repos.length === 0" message="No repos found" class="py-10" />
     <RepoCardList class="mt-10" :repos="filtered_repos" />
   </div>
 </template>

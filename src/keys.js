@@ -1,5 +1,3 @@
-export const ERROR_MESSAGE_KEY = 'error_message'
-
 export const REPOS_LOCAL_STORAGE_KEY = 'repos'
 export const FOLLOWERS_LOCAL_STORAGE_KEY = 'followers'
 export const FOLLOWING_LOCAL_STORAGE_KEY = 'following'

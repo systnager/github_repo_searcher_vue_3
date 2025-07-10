@@ -21,6 +21,7 @@ import TheGistsTab from '@/components/TheGistsTab.vue'
 function setTab(tabName) {
   if (TAB_LIST.includes(tabName)) {
     currentTab.value = tabName
+    localStorage.setItem(CURRENT_TAB_LOCAL_STORAGE_KEY, tabName)
   }
 }
 

@@ -8,9 +8,17 @@ defineProps({
     type: String,
     required: true,
   },
+  isShowActionButton: {
+    type: Boolean,
+    default: true,
+  },
+  actionButtonText: {
+    type: String,
+    default: 'Fetch data',
+  },
 })
 
-const emit = defineEmits(['fetchData, closeAlertMessage'])
+const emit = defineEmits(['fetchData', 'closeAlertMessage'])
 </script>
 
 <template>
@@ -33,10 +41,11 @@ const emit = defineEmits(['fetchData, closeAlertMessage'])
       {{ message }}
     </p>
     <button
+      v-if="isShowActionButton"
       class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white transition ease-in duration-100 font-bold py-2 px-4 rounded active:bg-blue-800"
       @click="emit('fetchData')"
     >
-      Fetch data
+      {{ actionButtonText }}
     </button>
   </div>
 </template>

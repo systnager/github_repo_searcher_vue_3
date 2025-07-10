@@ -9,31 +9,33 @@ import {
   LAST_FETCH_DATE_TIME_LOCAL_STORAGE_KEY,
 } from '@/keys'
 
+import { safeParseJSONArray } from '@/functions'
+
 const BASE_URL = 'https://api.github.com'
 
 export const repos = ref(
   localStorage.getItem(REPOS_LOCAL_STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(REPOS_LOCAL_STORAGE_KEY))
+    ? safeParseJSONArray(localStorage.getItem(REPOS_LOCAL_STORAGE_KEY))
     : [],
 )
 export const filtered_repos = ref(
   localStorage.getItem(FILTERED_REPOS_LOCAL_STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(FILTERED_REPOS_LOCAL_STORAGE_KEY))
+    ? safeParseJSONArray(localStorage.getItem(FILTERED_REPOS_LOCAL_STORAGE_KEY))
     : [],
 )
 export const followers = ref(
   localStorage.getItem(FOLLOWERS_LOCAL_STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(FOLLOWERS_LOCAL_STORAGE_KEY))
+    ? safeParseJSONArray(localStorage.getItem(FOLLOWERS_LOCAL_STORAGE_KEY))
     : [],
 )
 export const following = ref(
   localStorage.getItem(FOLLOWING_LOCAL_STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(FOLLOWING_LOCAL_STORAGE_KEY))
+    ? safeParseJSONArray(localStorage.getItem(FOLLOWING_LOCAL_STORAGE_KEY))
     : [],
 )
 export const gists = ref(
   localStorage.getItem(GISTS_LOCAL_STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(GISTS_LOCAL_STORAGE_KEY))
+    ? safeParseJSONArray(localStorage.getItem(GISTS_LOCAL_STORAGE_KEY))
     : [],
 )
 
@@ -43,6 +45,7 @@ export async function getRepos(query) {
     return data
   } catch (error) {
     console.error(error)
+    return []
   }
 }
 
@@ -52,6 +55,7 @@ export async function getFollowers(username) {
     return data
   } catch (error) {
     console.error(error)
+    return []
   }
 }
 
@@ -61,6 +65,7 @@ export async function getFollowing(username) {
     return data
   } catch (error) {
     console.error(error)
+    return []
   }
 }
 
@@ -70,6 +75,7 @@ export async function getGists(username) {
     return data
   } catch (error) {
     console.error(error)
+    return []
   }
 }
 
@@ -78,7 +84,7 @@ export async function fetchAllDataByUsername(username) {
   await fetchFollowers(username)
   await fetchFollowing(username)
   await fetchGists(username)
-  localStorage.setItem(LAST_FETCH_DATE_TIME_LOCAL_STORAGE_KEY, Date.now())
+  localStorage.setItem(LAST_FETCH_DATE_TIME_LOCAL_STORAGE_KEY, Date.now().toString())
 }
 
 export async function fetchRepos(username) {

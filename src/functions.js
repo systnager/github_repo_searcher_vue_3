@@ -3,6 +3,15 @@ export function normalizeDateTime(dateTime) {
 }
 
 export function formatUnixTimestamp(timestamp) {
-  const date = new Date((timestamp / 1000000) * 1000)
+  const date = new Date(Number(timestamp))
   return date.toLocaleString()
+}
+
+export function safeParseJSONArray(data) {
+  try {
+    return JSON.parse(data)
+  } catch (error) {
+    console.log(error)
+    return []
+  }
 }

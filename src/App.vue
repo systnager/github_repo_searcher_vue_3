@@ -1,8 +1,7 @@
 <script setup>
-import { ref, provide, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { fetchAllDataByUsername } from '@/github'
 import {
-  ERROR_MESSAGE_KEY,
   LAST_FETCH_DATE_TIME_LOCAL_STORAGE_KEY,
   USERNAME_FOR_FETCH_LOCAL_STORAGE_KEY,
 } from '@/keys'
@@ -11,20 +10,20 @@ import { REPOSITORIES_TAB_NAME, TAB_LIST } from '@/constants'
 
 import TheLoader from '@/components/TheLoader.vue'
 import TheTabNavigation from '@/components/TheTabNavigation.vue'
-import AlertMessage from './components/AlertMessage.vue'
+import AlertMessage from '@/components/AlertMessage.vue'
 
 const minDelay = 250
 
 const lastFetchDateTime = localStorage.getItem(LAST_FETCH_DATE_TIME_LOCAL_STORAGE_KEY)
 const username = ref(localStorage.getItem(USERNAME_FOR_FETCH_LOCAL_STORAGE_KEY) || '')
-const error_message = ref('')
 const isLoading = ref(false)
 const tabNavigationRef = ref()
 const isShowAlert = ref(false)
+const isShowError = ref(false)
 
 function searchButtonClicked() {
   if (username.value.length == 0) {
-    showError('Please enter username')
+    showHideError()
     return
   }
   showLoader()
@@ -34,14 +33,6 @@ function searchButtonClicked() {
   if (!TAB_LIST.includes(tabNavigationRef.value.tab)) {
     tabNavigationRef.value.setTab(REPOSITORIES_TAB_NAME)
   }
-}
-
-function showError(error) {
-  error_message.value = error
-}
-
-function hideError() {
-  error_message.value = ''
 }
 
 function showLoader() {
@@ -57,7 +48,10 @@ function showHideAlert() {
   isShowAlert.value = !isShowAlert.value
 }
 
-provide(ERROR_MESSAGE_KEY, { showError, hideError })
+function showHideError() {
+  isShowError.value = !isShowError.value
+}
+
 onMounted(() => {
   if (lastFetchDateTime) {
     showHideAlert()
@@ -71,8 +65,8 @@ onMounted(() => {
     v-if="isShowAlert"
     :message="`Data loaded successfully from local storage but the data might be out of date. Time last fetched: ${formatUnixTimestamp(lastFetchDateTime)}. Close this message for ignore or click the button to fetch data again.`"
     title="Load data successfully"
-    @closeAlertMessage="showHideAlert"
-    @fetchData="
+    @close-alert-message="showHideAlert"
+    @fetch-data="
       () => {
         showHideAlert()
         searchButtonClicked()
@@ -100,9 +94,13 @@ onMounted(() => {
     </div>
     <TheTabNavigation ref="tabNavigationRef" />
     <div>
-      <h2 class="text-center text-gray-800">
-        {{ error_message }}
-      </h2>
+      <AlertMessage
+        v-if="isShowError"
+        :message="`Please, enter username`"
+        title="Invalid data"
+        :isShowActionButton="false"
+        @close-alert-message="showHideError"
+      />
     </div>
   </div>
 </template>
